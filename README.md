@@ -3,14 +3,13 @@
 ## About
 
 This utility helps secure the `private` interface on DigitalOcean droplets by
-adding `iptable` rules that only allow traffic from your other droplets.
-
-`dolan` queries the DigitalOcean API and automatically updates `iptable` rules.
+adding `iptable` rules that only allow traffic from your other droplets. `dolan`
+queries the DigitalOcean API and automatically updates `iptable` rules.
 
 ## Usage
 
 ```
-DO_LAN=<read_only_api_token> /path/to/dolan_linux_amd64
+DO_KEY=<read_only_api_token> /path/to/dolan_linux_amd64
 ```
 
 The `iptables` rules added by `dolan` are equivalent to:
