@@ -1,5 +1,7 @@
 # dolan
 
+[![Join the chat at https://gitter.im/tam7t/dolan](https://badges.gitter.im/tam7t/dolan.svg)](https://gitter.im/tam7t/dolan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## About
 
 This utility helps secure the `private` interface on DigitalOcean droplets by
