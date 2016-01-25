@@ -1,4 +1,4 @@
-# dolan
+# dolan [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/tam7t/dolan) [![Build Status](http://img.shields.io/travis/fatih/color.svg?style=flat-square)](https://travis-ci.org/tam7t/dolan)
 
 ## About
 
