@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"os"
@@ -11,7 +12,16 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var appVersion string
+
 func main() {
+	version := flag.Bool("version", false, "Print the version and exit.")
+	flag.Parse()
+	if *version {
+		log.Printf(appVersion)
+		os.Exit(0)
+	}
+
 	accessToken := os.Getenv(`DO_KEY`)
 	if accessToken == `` {
 		log.Fatal(`Usage: DO_KEY environment variable must be set.`)
