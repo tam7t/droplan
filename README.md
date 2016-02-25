@@ -41,5 +41,5 @@ Dependencies are vendored with [govendor](https://github.com/kardianos/govendor)
 
 A `Makefile` is included:
   * `test` - runs unit tests
-  * `build` - builds `dolan` for all platforms
-  * `build_local` - builds `dolan` for just the local architecture
+  * `build` - builds `dolan` on the current platform
+  * `release` - builds releasable artifacts
