@@ -6,10 +6,20 @@ This utility helps secure the `private` interface on DigitalOcean droplets by
 adding `iptable` rules that only allow traffic from your other droplets. `dolan`
 queries the DigitalOcean API and automatically updates `iptable` rules.
 
+## Installation
+
+The latest release is available on the github [release page](https://github.com/tam7t/dolan/releases).
+
+You can setup a cron job to run every 5 minutes in `/etc/cron.d`
+
+```
+*/5 * * * * root PATH=/sbin DO_KEY=READONLY_KEY /usr/local/bin/dolan >/var/log/dolan.log 2>&1
+```
+
 ## Usage
 
 ```
-DO_KEY=<read_only_api_token> /path/to/dolan_linux_amd64
+DO_KEY=<read_only_api_token> /path/to/dolan
 ```
 
 The `iptables` rules added by `dolan` are equivalent to:
