@@ -7,9 +7,9 @@ resource "digitalocean_ssh_key" "root_ssh" {
   public_key = "${file(var.ssh_key_path)}"
 }
 
-resource "digitalocean_droplet" "dolan-ubuntu-x64" {
+resource "digitalocean_droplet" "droplan-ubuntu-x64" {
   image = "ubuntu-14-04-x64"
-  name = "dolan-ubuntu-x64"
+  name = "droplan-ubuntu-x64"
   region = "nyc3"
   size = "512mb"
   private_networking = true
@@ -26,17 +26,17 @@ resource "digitalocean_droplet" "dolan-ubuntu-x64" {
   provisioner "remote-exec" {
     inline = [
       "cd /tmp",
-      "wget https://github.com/tam7t/dolan/releases/download/v1.0.0/dolan_1.0.0_linux_amd64.zip",
-      "unzip dolan_1.0.0_linux_amd64.zip -d /usr/local/bin",
-      "rm /tmp/dolan_1.0.0_linux_amd64.zip",
-      "echo '${template_file.cron.rendered}' > /etc/cron.d/dolan"
+      "wget https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_amd64.zip",
+      "unzip droplan_1.0.0_linux_amd64.zip -d /usr/local/bin",
+      "rm /tmp/droplan_1.0.0_linux_amd64.zip",
+      "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
 }
 
-resource "digitalocean_droplet" "dolan-ubuntu-x32" {
+resource "digitalocean_droplet" "droplan-ubuntu-x32" {
   image = "ubuntu-14-04-x32"
-  name = "dolan-ubuntu-x32"
+  name = "droplan-ubuntu-x32"
   region = "nyc3"
   size = "512mb"
   private_networking = true
@@ -53,17 +53,17 @@ resource "digitalocean_droplet" "dolan-ubuntu-x32" {
   provisioner "remote-exec" {
     inline = [
       "cd /tmp",
-      "wget https://github.com/tam7t/dolan/releases/download/v1.0.0/dolan_1.0.0_linux_386.zip",
-      "unzip dolan_1.0.0_linux_386.zip -d /usr/local/bin",
-      "rm /tmp/dolan_1.0.0_linux_386.zip",
-      "echo '${template_file.cron.rendered}' > /etc/cron.d/dolan"
+      "wget https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_386.zip",
+      "unzip droplan_1.0.0_linux_386.zip -d /usr/local/bin",
+      "rm /tmp/droplan_1.0.0_linux_386.zip",
+      "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
 }
 
-resource "digitalocean_droplet" "dolan-fedora-x64" {
+resource "digitalocean_droplet" "droplan-fedora-x64" {
   image = "fedora-23-x64"
-  name = "dolan-fedora-x64"
+  name = "droplan-fedora-x64"
   region = "nyc3"
   size = "512mb"
   private_networking = true
@@ -77,10 +77,10 @@ resource "digitalocean_droplet" "dolan-fedora-x64" {
 
   provisioner "remote-exec" {
     inline = [
-      "curl -O -L https://github.com/tam7t/dolan/releases/download/v1.0.0/dolan_1.0.0_linux_amd64.zip",
-      "unzip dolan_1.0.0_linux_amd64.zip -d /usr/local/bin",
-      "rm dolan_1.0.0_linux_amd64.zip",
-      "echo '${template_file.cron.rendered}' > /etc/cron.d/dolan"
+      "curl -O -L https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_amd64.zip",
+      "unzip droplan_1.0.0_linux_amd64.zip -d /usr/local/bin",
+      "rm droplan_1.0.0_linux_amd64.zip",
+      "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
 }
@@ -89,6 +89,6 @@ resource "template_file" "cron" {
   template = "${file("${path.module}/templates/cron.tpl")}"
 
   vars {
-    key = "${var.dolan_token}"
+    key = "${var.droplan_token}"
   }
 }
