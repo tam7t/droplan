@@ -57,14 +57,14 @@ func main() {
 	iface, err := PrivateInterface(ifaces, local)
 	failIfErr(err)
 
-	// setup dolan-peers chain for local interface
+	// setup droplan-peers chain for local interface
 	err = Setup(ipt, iface)
 	failIfErr(err)
 
-	// update dolan-peers
+	// update droplan-peers
 	err = UpdatePeers(ipt, allowed)
 	failIfErr(err)
-	log.Printf(`Added %d peers to dolan-peers`, len(allowed))
+	log.Printf(`Added %d peers to droplan-peers`, len(allowed))
 }
 
 func failIfErr(err error) {
