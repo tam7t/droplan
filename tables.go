@@ -14,14 +14,14 @@ type IPTables interface {
 func Setup(ipt IPTables, ipFace string) error {
 	var err error
 
-	err = ipt.NewChain("filter", "dolan-peers")
+	err = ipt.NewChain("filter", "droplan-peers")
 	if err != nil {
 		if err.Error() != "exit status 1: iptables: Chain already exists.\n" {
 			return err
 		}
 	}
 
-	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-j", "dolan-peers")
+	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-j", "droplan-peers")
 	if err != nil {
 		return err
 	}
@@ -32,17 +32,17 @@ func Setup(ipt IPTables, ipFace string) error {
 	return nil
 }
 
-// UpdatePeers updates the dolan-peers chain in iptables with the specified
+// UpdatePeers updates the droplan-peers chain in iptables with the specified
 // peers
 func UpdatePeers(ipt IPTables, peers []string) error {
-	// TODO(tam7t): prune `dolan-peers` in a way that doesnt cause downtime
-	err := ipt.ClearChain("filter", "dolan-peers")
+	// TODO(tam7t): prune `droplan-peers` in a way that doesnt cause downtime
+	err := ipt.ClearChain("filter", "droplan-peers")
 	if err != nil {
 		return err
 	}
 
 	for _, peer := range peers {
-		err := ipt.Append("filter", "dolan-peers", "-s", peer, "-j", "ACCEPT")
+		err := ipt.Append("filter", "droplan-peers", "-s", peer, "-j", "ACCEPT")
 		if err != nil {
 			return err
 		}

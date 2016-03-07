@@ -46,7 +46,7 @@ func TestTables(t *testing.T) {
 		g.It(`creates a new chain`, func() {
 			sipt.newChain = func(a, b string) error {
 				g.Assert(a).Equal(`filter`)
-				g.Assert(b).Equal(`dolan-peers`)
+				g.Assert(b).Equal(`droplan-peers`)
 				return nil
 			}
 			Setup(sipt, `eth1`)
@@ -56,7 +56,7 @@ func TestTables(t *testing.T) {
 			g.It(`returns the error`, func() {
 				sipt.appendUnique = func(a, b string, c ...string) error {
 					if a == `filter` && b == `INPUT` && len(c) == 4 {
-						if c[0] == `-i` && c[1] == `eth1` && c[2] == `-j` && c[3] == `dolan-peers` {
+						if c[0] == `-i` && c[1] == `eth1` && c[2] == `-j` && c[3] == `droplan-peers` {
 							return errors.New(`bad add chain`)
 						}
 					}
@@ -80,7 +80,7 @@ func TestTables(t *testing.T) {
 			})
 		})
 
-		g.It(`adds the dolan-peer chain and deny to the interface`, func() {
+		g.It(`adds the droplan-peer chain and deny to the interface`, func() {
 			var params [][]string
 
 			sipt.appendUnique = func(a, b string, c ...string) error {
@@ -93,7 +93,7 @@ func TestTables(t *testing.T) {
 			Setup(sipt, `eth1`)
 
 			g.Assert(params).Equal([][]string{
-				[]string{`filter`, `INPUT`, `-i`, `eth1`, `-j`, `dolan-peers`},
+				[]string{`filter`, `INPUT`, `-i`, `eth1`, `-j`, `droplan-peers`},
 				[]string{`filter`, `INPUT`, `-i`, `eth1`, `-j`, `DROP`},
 			})
 		})
@@ -114,7 +114,7 @@ func TestTables(t *testing.T) {
 			g.It(`clears the chain`, func() {
 				sipt.clearChain = func(a, b string) error {
 					g.Assert(a).Equal(`filter`)
-					g.Assert(b).Equal(`dolan-peers`)
+					g.Assert(b).Equal(`droplan-peers`)
 					return nil
 				}
 				UpdatePeers(sipt, peers)
@@ -137,7 +137,7 @@ func TestTables(t *testing.T) {
 			g.It(`clears the chain`, func() {
 				sipt.clearChain = func(a, b string) error {
 					g.Assert(a).Equal(`filter`)
-					g.Assert(b).Equal(`dolan-peers`)
+					g.Assert(b).Equal(`droplan-peers`)
 					return nil
 				}
 				UpdatePeers(sipt, peers)
@@ -156,7 +156,7 @@ func TestTables(t *testing.T) {
 				UpdatePeers(sipt, peers)
 
 				g.Assert(params).Equal([][]string{
-					[]string{`filter`, `dolan-peers`, `-s`, `peer1`, `-j`, `ACCEPT`},
+					[]string{`filter`, `droplan-peers`, `-s`, `peer1`, `-j`, `ACCEPT`},
 				})
 			})
 
@@ -187,7 +187,7 @@ func TestTables(t *testing.T) {
 			g.It(`clears the chain`, func() {
 				sipt.clearChain = func(a, b string) error {
 					g.Assert(a).Equal(`filter`)
-					g.Assert(b).Equal(`dolan-peers`)
+					g.Assert(b).Equal(`droplan-peers`)
 					return nil
 				}
 				UpdatePeers(sipt, peers)
@@ -206,8 +206,8 @@ func TestTables(t *testing.T) {
 				UpdatePeers(sipt, peers)
 
 				g.Assert(params).Equal([][]string{
-					[]string{`filter`, `dolan-peers`, `-s`, `peer1`, `-j`, `ACCEPT`},
-					[]string{`filter`, `dolan-peers`, `-s`, `peer2`, `-j`, `ACCEPT`},
+					[]string{`filter`, `droplan-peers`, `-s`, `peer1`, `-j`, `ACCEPT`},
+					[]string{`filter`, `droplan-peers`, `-s`, `peer2`, `-j`, `ACCEPT`},
 				})
 			})
 		})
