@@ -93,8 +93,9 @@ func TestTables(t *testing.T) {
 			Setup(sipt, `eth1`)
 
 			g.Assert(params).Equal([][]string{
-				[]string{`filter`, `INPUT`, `-i`, `eth1`, `-j`, `droplan-peers`},
-				[]string{`filter`, `INPUT`, `-i`, `eth1`, `-j`, `DROP`},
+				[]string{"filter", "INPUT", "-i", "eth1", "-j", "droplan-peers"},
+				[]string{"filter", "INPUT", "-i", "eth1", "-m", "conntrack", "--ctstate", "ESTABLISHED,RELATED", "-j", "ACCEPT"},
+				[]string{"filter", "INPUT", "-i", "eth1", "-j", "DROP"},
 			})
 		})
 	})

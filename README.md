@@ -27,6 +27,7 @@ The `iptables` rules added by `droplan` are equivalent to:
 ```
 -N droplan-peers # create a new chain
 -A INPUT -i eth1 -j droplan-peers # add chain to private interface
+-A INPUT -i eth1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 -A INPUT -i eth1 -j DROP # add default DROP rule to private interface
 -A droplan-peers -s <PEER>/32 -j ACCEPT # allow traffic from PEER ip address
 ```
