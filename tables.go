@@ -25,6 +25,11 @@ func Setup(ipt IPTables, ipFace string) error {
 	if err != nil {
 		return err
 	}
+	// Do not drop connections when the `droplan-peers` chain is being updated
+	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-m", "conntrack", "--ctstate", "ESTABLISHED,RELATED", "-j", "ACCEPT")
+	if err != nil {
+		return err
+	}
 	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-j", "DROP")
 	if err != nil {
 		return err
@@ -35,7 +40,6 @@ func Setup(ipt IPTables, ipFace string) error {
 // UpdatePeers updates the droplan-peers chain in iptables with the specified
 // peers
 func UpdatePeers(ipt IPTables, peers []string) error {
-	// TODO(tam7t): prune `droplan-peers` in a way that doesnt cause downtime
 	err := ipt.ClearChain("filter", "droplan-peers")
 	if err != nil {
 		return err
