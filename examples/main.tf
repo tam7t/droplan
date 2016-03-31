@@ -17,18 +17,10 @@ resource "digitalocean_droplet" "droplan-ubuntu-x64" {
 
   provisioner "remote-exec" {
     inline = [
-      "apt-get update",
-      "apt-get upgrade -y",
-      "apt-get install -y unzip"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
       "cd /tmp",
-      "wget https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_amd64.zip",
-      "unzip droplan_1.0.0_linux_amd64.zip -d /usr/local/bin",
-      "rm /tmp/droplan_1.0.0_linux_amd64.zip",
+      "curl -O -L https://github.com/tam7t/droplan/releases/download/v1.0.1/droplan_1.0.1_linux_amd64.tar.gz",
+      "tar -zxf droplan_1.0.1_linux_amd64.tar.gz -C /usr/local/bin",
+      "rm /tmp/droplan_1.0.1_linux_amd64.tar.gz",
       "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
@@ -44,18 +36,10 @@ resource "digitalocean_droplet" "droplan-ubuntu-x32" {
 
   provisioner "remote-exec" {
     inline = [
-      "apt-get update",
-      "apt-get upgrade -y",
-      "apt-get install -y unzip"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
       "cd /tmp",
-      "wget https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_386.zip",
-      "unzip droplan_1.0.0_linux_386.zip -d /usr/local/bin",
-      "rm /tmp/droplan_1.0.0_linux_386.zip",
+      "curl -O -L https://github.com/tam7t/droplan/releases/download/v1.0.1/droplan_1.0.1_linux_386.tar.gz",
+      "tar -zxf droplan_1.0.1_linux_386.tar.gz -C /usr/local/bin",
+      "rm /tmp/droplan_1.0.1_linux_386.tar.gz",
       "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
@@ -71,15 +55,9 @@ resource "digitalocean_droplet" "droplan-fedora-x64" {
 
   provisioner "remote-exec" {
     inline = [
-      "dnf -y install unzip wget"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "curl -O -L https://github.com/tam7t/droplan/releases/download/v1.0.0/droplan_1.0.0_linux_amd64.zip",
-      "unzip droplan_1.0.0_linux_amd64.zip -d /usr/local/bin",
-      "rm droplan_1.0.0_linux_amd64.zip",
+      "curl -O -L https://github.com/tam7t/droplan/releases/download/v1.0.1/droplan_1.0.1_linux_amd64.tar.gz",
+      "tar -zxf droplan_1.0.1_linux_amd64.tar.gz -C /usr/local/bin",
+      "rm droplan_1.0.1_linux_amd64.tar.gz",
       "echo '${template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
   }
