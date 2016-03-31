@@ -53,9 +53,9 @@ func TestHelper(t *testing.T) {
 
 			g.Describe(`without an ipv4 address`, func() {
 				g.It(`returns an error`, func() {
-					data := decodeMetadata(`{"interfaces": {"public": [{"ipv4": {"ip_address": "publicIP"}}]}}`)
+					data := decodeMetadata(`{"interfaces": {"private": [{"ipv6": {"ip_address": "privateIP"}}]}}`)
 					_, err := LocalAddress(data)
-					g.Assert(err).Equal(errors.New(`no private interfaces`))
+					g.Assert(err).Equal(errors.New(`no ipv4 private iface`))
 				})
 			})
 		})
