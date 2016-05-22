@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"net/url"
 	"testing"
 
 	"github.com/digitalocean/godo"
@@ -107,6 +109,35 @@ func TestPeers(t *testing.T) {
 				drops, err := DropletList(sds)
 				g.Assert(drops).Equal([]godo.Droplet{{Name: `firstPage`}, {Name: `secondPage`}})
 				g.Assert(err).Equal(nil)
+			})
+		})
+
+		g.Describe("when droplet services list errors", func() {
+			g.BeforeEach(func() {
+				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					return []godo.Droplet{}, nil, errors.New("asdf")
+				}
+			})
+
+			g.It("returns an error", func() {
+				_, err := DropletList(sds)
+				g.Assert(err).Equal(errors.New("asdf"))
+			})
+		})
+
+		g.Describe("when current page errors", func() {
+			g.BeforeEach(func() {
+				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "page=)", Last: "page="}}
+					return []godo.Droplet{{Name: "foobar"}}, resp, nil
+				}
+			})
+
+			g.It("returns an error", func() {
+				_, err := DropletList(sds)
+
+				g.Assert(err.(*url.Error).Op).Equal("parse")
 			})
 		})
 	})

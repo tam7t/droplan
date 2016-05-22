@@ -66,6 +66,18 @@ func TestTables(t *testing.T) {
 			})
 		})
 
+		g.Describe("when adding the established connection rule errors", func() {
+			g.It("returns the error", func() {
+				sipt.appendUnique = func(a, b string, c ...string) error {
+					if a == "filter" && b == "INPUT" && len(c) == 8 {
+						return errors.New("bad connect rule")
+					}
+					return nil
+				}
+				g.Assert(Setup(sipt, "eth1")).Equal(errors.New("bad connect rule"))
+			})
+		})
+
 		g.Describe(`when adding the deny rule errors`, func() {
 			g.It(`returns the error`, func() {
 				sipt.appendUnique = func(a, b string, c ...string) error {
