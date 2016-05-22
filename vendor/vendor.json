@@ -3,9 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "u4FpRzbQoItl4TSuT+IhRb+g898=",
 			"path": "github.com/coreos/go-iptables/iptables",
-			"revision": "90456be57fcb8185b264b77ce42a9539df42df25",
-			"revisionTime": "2015-12-11T10:33:57-08:00"
+			"revision": "fbb73372b87f6e89951c2b6b31470c2c9d5cfae3",
+			"revisionTime": "2016-03-31T14:02:05Z"
 		},
 		{
 			"path": "github.com/digitalocean/go-metadata",
