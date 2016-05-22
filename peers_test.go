@@ -145,10 +145,12 @@ func TestPeers(t *testing.T) {
 
 type stubDropletService struct {
 	list           func(*godo.ListOptions) ([]godo.Droplet, *godo.Response, error)
+	listTag        func(string, *godo.ListOptions) ([]godo.Droplet, *godo.Response, error)
 	get            func(int) (*godo.Droplet, *godo.Response, error)
 	create         func(*godo.DropletCreateRequest) (*godo.Droplet, *godo.Response, error)
 	createMultiple func(*godo.DropletMultiCreateRequest) ([]godo.Droplet, *godo.Response, error)
 	delete         func(int) (*godo.Response, error)
+	deleteTag      func(string) (*godo.Response, error)
 	kernels        func(int, *godo.ListOptions) ([]godo.Kernel, *godo.Response, error)
 	snapshots      func(int, *godo.ListOptions) ([]godo.Image, *godo.Response, error)
 	backups        func(int, *godo.ListOptions) ([]godo.Image, *godo.Response, error)
@@ -158,6 +160,10 @@ type stubDropletService struct {
 
 func (sds *stubDropletService) List(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
 	return sds.list(a)
+}
+
+func (sds *stubDropletService) ListByTag(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+	return sds.listTag(a, b)
 }
 
 func (sds *stubDropletService) Get(a int) (*godo.Droplet, *godo.Response, error) {
@@ -174,6 +180,10 @@ func (sds *stubDropletService) CreateMultiple(a *godo.DropletMultiCreateRequest)
 
 func (sds *stubDropletService) Delete(a int) (*godo.Response, error) {
 	return sds.delete(a)
+}
+
+func (sds *stubDropletService) DeleteByTag(a string) (*godo.Response, error) {
+	return sds.deleteTag(a)
 }
 
 func (sds *stubDropletService) Kernels(a int, b *godo.ListOptions) ([]godo.Kernel, *godo.Response, error) {

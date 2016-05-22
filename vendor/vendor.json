@@ -3,9 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "u4FpRzbQoItl4TSuT+IhRb+g898=",
 			"path": "github.com/coreos/go-iptables/iptables",
-			"revision": "90456be57fcb8185b264b77ce42a9539df42df25",
-			"revisionTime": "2015-12-11T10:33:57-08:00"
+			"revision": "fbb73372b87f6e89951c2b6b31470c2c9d5cfae3",
+			"revisionTime": "2016-03-31T14:02:05Z"
 		},
 		{
 			"path": "github.com/digitalocean/go-metadata",
@@ -13,9 +14,10 @@
 			"revisionTime": "2015-11-05T15:42:06-05:00"
 		},
 		{
+			"checksumSHA1": "Xz2ULaPYK8IjSqN2BkyEN0hg31w=",
 			"path": "github.com/digitalocean/godo",
-			"revision": "2688c11a02dc3deac65645c82c3c812f95e417bf",
-			"revisionTime": "2015-12-14T16:35:43-05:00"
+			"revision": "1124654416c392deb541124a916014a4d8d84cd8",
+			"revisionTime": "2016-04-25T19:38:15Z"
 		},
 		{
 			"path": "github.com/franela/goblin",
@@ -47,5 +49,6 @@
 			"revision": "2baa8a1b9338cf13d9eeb27696d761155fa480be",
 			"revisionTime": "2015-12-03T13:21:41-08:00"
 		}
-	]
+	],
+	"rootPath": "github.com/tam7t/droplan"
 }
