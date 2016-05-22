@@ -22,9 +22,9 @@ const (
 	userAgent      = "godo/" + libraryVersion
 	mediaType      = "application/json"
 
-	headerRateLimit     = "X-RateLimit-Limit"
-	headerRateRemaining = "X-RateLimit-Remaining"
-	headerRateReset     = "X-RateLimit-Reset"
+	headerRateLimit     = "RateLimit-Limit"
+	headerRateRemaining = "RateLimit-Remaining"
+	headerRateReset     = "RateLimit-Reset"
 )
 
 // Client manages communication with DigitalOcean V2 API.
@@ -55,6 +55,7 @@ type Client struct {
 	Sizes             SizesService
 	FloatingIPs       FloatingIPsService
 	FloatingIPActions FloatingIPActionsService
+	Tags              TagsService
 
 	// Optional function called after every successful request made to the DO APIs
 	onRequestCompleted RequestCompletionCallback
@@ -104,7 +105,7 @@ type Rate struct {
 	// The number of remaining requests the client can make this hour.
 	Remaining int `json:"remaining"`
 
-	// The time at w\hic the current rate limit will reset.
+	// The time at which the current rate limit will reset.
 	Reset Timestamp `json:"reset"`
 }
 
@@ -156,8 +157,51 @@ func NewClient(httpClient *http.Client) *Client {
 	c.Sizes = &SizesServiceOp{client: c}
 	c.FloatingIPs = &FloatingIPsServiceOp{client: c}
 	c.FloatingIPActions = &FloatingIPActionsServiceOp{client: c}
+	c.Tags = &TagsServiceOp{client: c}
 
 	return c
+}
+
+// ClientOpt are options for New.
+type ClientOpt func(*Client) error
+
+// New returns a new DIgitalOcean API client instance.
+func New(httpClient *http.Client, opts ...ClientOpt) (*Client, error) {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
+	baseURL, _ := url.Parse(defaultBaseURL)
+
+	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
+	for _, opt := range opts {
+		if err := opt(c); err != nil {
+			return nil, err
+		}
+	}
+
+	return c, nil
+}
+
+// SetBaseURL is a client option for setting the base URL.
+func SetBaseURL(bu string) ClientOpt {
+	return func(c *Client) error {
+		u, err := url.Parse(bu)
+		if err != nil {
+			return err
+		}
+
+		c.BaseURL = u
+		return nil
+	}
+}
+
+// SetUserAgent is a client option for setting the user agent.
+func SetUserAgent(ua string) ClientOpt {
+	return func(c *Client) error {
+		c.UserAgent = fmt.Sprintf("%s+%s", ua, c.UserAgent)
+		return nil
+	}
 }
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr, which will be resolved to the
