@@ -27,6 +27,8 @@ func main() {
 		log.Fatal(`Usage: DO_KEY environment variable must be set.`)
 	}
 
+	peerTag := os.Getenv(`DO_TAG`)
+
 	// setup dependencies
 	oauthClient := oauth2.NewClient(oauth2.NoContext, oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken}))
 	apiClient := godo.NewClient(oauthClient)
@@ -41,7 +43,12 @@ func main() {
 	failIfErr(err)
 
 	// collect list of all droplets
-	drops, err := DropletList(apiClient.Droplets)
+	var drops []godo.Droplet
+	if peerTag != "" {
+		drops, err = DropletListTags(apiClient.Droplets, peerTag)
+	} else {
+		drops, err = DropletList(apiClient.Droplets)
+	}
 	failIfErr(err)
 
 	allowed, ok := SortDroplets(drops)[region]
