@@ -3,11 +3,98 @@ package main
 import (
 	"errors"
 	"net/url"
+	"reflect"
 	"testing"
 
 	"github.com/digitalocean/godo"
 	. "github.com/franela/goblin"
 )
+
+func TestDropletListTags(t *testing.T) {
+	tests := []struct {
+		name             string
+		ds               *stubDropletService
+		expectedDroplets []godo.Droplet
+		expectedError    error
+	}{
+		{
+			name: "no droplets",
+			ds: &stubDropletService{
+				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = nil
+					return []godo.Droplet{}, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{},
+		},
+		{
+			name: "single page of droplets",
+			ds: &stubDropletService{
+				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = nil
+					return []godo.Droplet{{Name: `foobar`}}, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{{Name: `foobar`}},
+		},
+		{
+			name: "multiple pages of droplets",
+			ds: &stubDropletService{
+				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					drops := []godo.Droplet{}
+					if b.Page == 0 {
+						resp.Links = &godo.Links{Pages: &godo.Pages{Next: `http://example.com/droplets?page=2`, Last: `http://example.com/droplets?page=2`}}
+						drops = append(drops, godo.Droplet{Name: `firstPage`})
+					} else {
+						resp.Links = &godo.Links{Pages: &godo.Pages{Prev: `http://example.com/droplets?page=1`}}
+						drops = append(drops, godo.Droplet{Name: `secondPage`})
+					}
+					return drops, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{{Name: `firstPage`}, {Name: `secondPage`}},
+		},
+		{
+			name: "list errors",
+			ds: &stubDropletService{
+				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					return []godo.Droplet{}, nil, errors.New("asdf")
+				},
+			},
+			expectedError: errors.New("asdf"),
+		},
+		{
+			name: "current page errors",
+			ds: &stubDropletService{
+				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "page=)", Last: "page="}}
+					return []godo.Droplet{{Name: "foobar"}}, resp, nil
+				},
+			},
+			expectedError: errors.New("parse page=): invalid URI for request"),
+		},
+	}
+
+	for _, test := range tests {
+		out, err := DropletListTags(test.ds, "access")
+		if !reflect.DeepEqual(err, test.expectedError) {
+			if err.Error() != test.expectedError.Error() {
+				t.Logf("want:%v", test.expectedError)
+				t.Logf("got:%v", err)
+				t.Fatalf("test case failed: %s", test.name)
+			}
+		}
+		if !reflect.DeepEqual(out, test.expectedDroplets) {
+			t.Logf("want:%v", test.expectedDroplets)
+			t.Logf("got:%v", out)
+			t.Fatalf("test case failed: %s", test.name)
+		}
+	}
+}
 
 func TestPeers(t *testing.T) {
 	g := Goblin(t)
