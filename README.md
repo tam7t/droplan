@@ -32,6 +32,10 @@ The `iptables` rules added by `droplan` are equivalent to:
 -A droplan-peers -s <PEER>/32 -j ACCEPT # allow traffic from PEER ip address
 ```
 
+Access can be limited to a subset of droplets using [tags](https://developers.digitalocean.com/documentation/v2/#tags).
+The `DO_TAG` environment variable tells `droplan` to only allow access to
+droplets with the specified tag.
+
 ## Development
 
 ### Dependencies
