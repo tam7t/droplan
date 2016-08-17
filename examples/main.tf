@@ -70,6 +70,18 @@ resource "digitalocean_droplet" "droplan-fedora-x64" {
   }
 }
 
+resource "digitalocean_droplet" "droplan-coreos" {
+  image = "coreos-stable"
+  name = "droplan-coreos"
+  region = "nyc3"
+  size = "512mb"
+  private_networking = true
+  ssh_keys = ["${digitalocean_ssh_key.root_ssh.id}"]
+  tags = ["${digitalocean_tag.droplan.id}"]
+
+  user_data = "${data.template_file.cloudinit.rendered}"
+}
+
 resource "digitalocean_droplet" "droplan-ubuntu-x64-notag" {
   image = "ubuntu-14-04-x64"
   name = "droplan-ubuntu-x64-notag"
@@ -86,6 +98,15 @@ resource "digitalocean_droplet" "droplan-ubuntu-x64-notag" {
       "rm /tmp/droplan_1.1.0_linux_amd64.tar.gz",
       "echo '${data.template_file.cron.rendered}' > /etc/cron.d/droplan"
     ]
+  }
+}
+
+data "template_file" "cloudinit" {
+  template = "${file("${path.module}/templates/cloudinit.tpl")}"
+
+  vars {
+    key = "${var.droplan_token}"
+    tag = "${digitalocean_tag.droplan.id}"
   }
 }
 
