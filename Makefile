@@ -1,3 +1,5 @@
+DROPLAN_VERSION ?= latest
+
 test:
 	GO15VENDOREXPERIMENT=1 go test . -cover
 
@@ -20,9 +22,10 @@ release: build-amd64 build-i386
 	@tar -cvzf droplan_${DROPLAN_VERSION}_linux_386.tar.gz droplan
 	@rm droplan
 
-docker: build-amd64
-	@docker build -t tam7t/droplan .
+docker: build-amd64 docker-image clean
 
+docker-image:
+	@docker build -t tam7t/droplan:${DROPLAN_VERSION} .
 
 clean:
 	@rm -f droplan
