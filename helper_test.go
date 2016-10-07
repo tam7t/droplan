@@ -27,7 +27,7 @@ func TestHelper(t *testing.T) {
 				case *net.IPNet:
 					ip = v.IP.String()
 				}
-				ifaceName, err := PrivateInterface(ifaces, ip)
+				ifaceName, err := FindInterfaceName(ifaces, ip)
 				g.Assert(ifaceName).Equal(ifaces[0].Name)
 				g.Assert(err).Equal(nil)
 			})
@@ -35,7 +35,7 @@ func TestHelper(t *testing.T) {
 
 		g.It(`with an invalid IP`, func() {
 			ifaces, _ := net.Interfaces()
-			ifaceName, err := PrivateInterface(ifaces, `somethingBad`)
+			ifaceName, err := FindInterfaceName(ifaces, `somethingBad`)
 			g.Assert(ifaceName).Equal(``)
 			g.Assert(err).Equal(errors.New(`local interface could not be found`))
 		})
@@ -46,7 +46,7 @@ func TestHelper(t *testing.T) {
 			g.Describe(`with an ipv4 address`, func() {
 				g.It(`returns the ip address`, func() {
 					data := decodeMetadata(`{"interfaces": {"private": [{"ipv4": {"ip_address": "privateIP"}}]}}`)
-					addr, _ := LocalAddress(data)
+					addr, _ := PrivateAddress(data)
 					g.Assert(addr).Equal(`privateIP`)
 				})
 			})
@@ -54,7 +54,7 @@ func TestHelper(t *testing.T) {
 			g.Describe(`without an ipv4 address`, func() {
 				g.It(`returns an error`, func() {
 					data := decodeMetadata(`{"interfaces": {"private": [{"ipv6": {"ip_address": "privateIP"}}]}}`)
-					_, err := LocalAddress(data)
+					_, err := PrivateAddress(data)
 					g.Assert(err).Equal(errors.New(`no ipv4 private iface`))
 				})
 			})
@@ -63,7 +63,7 @@ func TestHelper(t *testing.T) {
 		g.Describe(`without a private interface`, func() {
 			g.It(`returns an error`, func() {
 				data := &metadata.Metadata{}
-				_, err := LocalAddress(data)
+				_, err := PrivateAddress(data)
 				g.Assert(err).Equal(errors.New(`no private interfaces`))
 			})
 		})

@@ -57,11 +57,11 @@ func main() {
 	}
 
 	// collect local network interface information
-	local, err := LocalAddress(mData)
+	local, err := PrivateAddress(mData)
 	failIfErr(err)
 	ifaces, err := net.Interfaces()
 	failIfErr(err)
-	iface, err := PrivateInterface(ifaces, local)
+	iface, err := FindInterfaceName(ifaces, local)
 	failIfErr(err)
 
 	// setup droplan-peers chain for local interface

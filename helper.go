@@ -7,9 +7,9 @@ import (
 	"github.com/digitalocean/go-metadata"
 )
 
-// PrivateInterface returns the network interface name of the provided local
+// FindInterfaceName returns the network interface name of the provided local
 // ip address
-func PrivateInterface(ifaces []net.Interface, local string) (string, error) {
+func FindInterfaceName(ifaces []net.Interface, local string) (string, error) {
 	for _, i := range ifaces {
 		addrs, err := i.Addrs()
 		if err != nil {
@@ -35,9 +35,9 @@ func PrivateInterface(ifaces []net.Interface, local string) (string, error) {
 	return ``, errors.New(`local interface could not be found`)
 }
 
-// LocalAddress parses metadata and to find the local private ipv4 interface
+// PrivateAddress parses metadata to find the local private ipv4 interface
 // address
-func LocalAddress(data *metadata.Metadata) (string, error) {
+func PrivateAddress(data *metadata.Metadata) (string, error) {
 	privateIface := data.Interfaces[`private`]
 	if len(privateIface) >= 1 {
 		ipV4 := privateIface[0].IPv4
