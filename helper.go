@@ -13,7 +13,7 @@ func FindInterfaceName(ifaces []net.Interface, local string) (string, error) {
 	for _, i := range ifaces {
 		addrs, err := i.Addrs()
 		if err != nil {
-			return ``, err
+			return "", err
 		}
 
 		for _, addr := range addrs {
@@ -32,20 +32,35 @@ func FindInterfaceName(ifaces []net.Interface, local string) (string, error) {
 		}
 	}
 
-	return ``, errors.New(`local interface could not be found`)
+	return "", errors.New("local interface could not be found")
 }
 
 // PrivateAddress parses metadata to find the local private ipv4 interface
 // address
 func PrivateAddress(data *metadata.Metadata) (string, error) {
-	privateIface := data.Interfaces[`private`]
+	privateIface := data.Interfaces["private"]
 	if len(privateIface) >= 1 {
 		ipV4 := privateIface[0].IPv4
 		if ipV4 == nil {
-			return ``, errors.New(`no ipv4 private iface`)
+			return "", errors.New("no ipv4 private iface")
 		}
 
 		return ipV4.IPAddress, nil
 	}
-	return ``, errors.New(`no private interfaces`)
+	return "", errors.New("no private interfaces")
+}
+
+// PublicAddress parses metadata to find the local public ipv4 interface
+// address
+func PublicAddress(data *metadata.Metadata) (string, error) {
+	publicIface := data.Interfaces["public"]
+	if len(publicIface) >= 1 {
+		ipV4 := publicIface[0].IPv4
+		if ipV4 == nil {
+			return "", errors.New("no ipv4 public iface")
+		}
+
+		return ipV4.IPAddress, nil
+	}
+	return "", errors.New("no public interfaces")
 }
