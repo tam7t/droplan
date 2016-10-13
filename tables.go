@@ -11,17 +11,17 @@ type IPTables interface {
 
 // Setup creates a new iptables chain for holding peers and adds the chain and
 // deny rules to the specified interface
-func Setup(ipt IPTables, ipFace string) error {
+func Setup(ipt IPTables, ipFace, chain string) error {
 	var err error
 
-	err = ipt.NewChain("filter", "droplan-peers")
+	err = ipt.NewChain("filter", chain)
 	if err != nil {
 		if err.Error() != "exit status 1: iptables: Chain already exists.\n" {
 			return err
 		}
 	}
 
-	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-j", "droplan-peers")
+	err = ipt.AppendUnique("filter", "INPUT", "-i", ipFace, "-j", chain)
 	if err != nil {
 		return err
 	}
@@ -39,14 +39,14 @@ func Setup(ipt IPTables, ipFace string) error {
 
 // UpdatePeers updates the droplan-peers chain in iptables with the specified
 // peers
-func UpdatePeers(ipt IPTables, peers []string) error {
-	err := ipt.ClearChain("filter", "droplan-peers")
+func UpdatePeers(ipt IPTables, peers []string, chain string) error {
+	err := ipt.ClearChain("filter", chain)
 	if err != nil {
 		return err
 	}
 
 	for _, peer := range peers {
-		err := ipt.Append("filter", "droplan-peers", "-s", peer, "-j", "ACCEPT")
+		err := ipt.Append("filter", chain, "-s", peer, "-j", "ACCEPT")
 		if err != nil {
 			return err
 		}

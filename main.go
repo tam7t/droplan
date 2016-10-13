@@ -22,12 +22,15 @@ func main() {
 		os.Exit(0)
 	}
 
-	accessToken := os.Getenv(`DO_KEY`)
-	if accessToken == `` {
-		log.Fatal(`Usage: DO_KEY environment variable must be set.`)
+	accessToken := os.Getenv("DO_KEY")
+	if accessToken == "" {
+		log.Fatal("Usage: DO_KEY environment variable must be set.")
 	}
 
-	peerTag := os.Getenv(`DO_TAG`)
+	peerTag := os.Getenv("DO_TAG")
+
+	// PUBLIC=true will tell us to block traffic on the public interface
+	public := os.Getenv("PUBLIC")
 
 	// setup dependencies
 	oauthClient := oauth2.NewClient(oauth2.NoContext, oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken}))
@@ -51,27 +54,50 @@ func main() {
 	}
 	failIfErr(err)
 
-	allowed, ok := SortDroplets(drops)[region]
-	if !ok {
-		log.Fatalf(`No droplets listed in region [%s]`, region)
-	}
-
 	// collect local network interface information
-	local, err := PrivateAddress(mData)
-	failIfErr(err)
 	ifaces, err := net.Interfaces()
 	failIfErr(err)
-	iface, err := FindInterfaceName(ifaces, local)
+
+	pubAddr, err := PublicAddress(mData)
 	failIfErr(err)
 
-	// setup droplan-peers chain for local interface
-	err = Setup(ipt, iface)
+	if public == "true" {
+		publicPeers := PublicDroplets(drops)
+
+		// find public iface name
+		iface, err := FindInterfaceName(ifaces, pubAddr)
+		failIfErr(err)
+
+		// setup droplan-peers-public chain for public interface
+		err = Setup(ipt, iface, "droplan-peers-public")
+		failIfErr(err)
+
+		// update droplan-peers-public
+		err = UpdatePeers(ipt, publicPeers, "droplan-peers-public")
+		failIfErr(err)
+		log.Printf("Added %d peers to droplan-peers-public", len(publicPeers))
+	}
+
+	privAddr, err := PrivateAddress(mData)
+	failIfErr(err)
+
+	privatePeers, ok := SortDroplets(drops)[region]
+	if !ok {
+		log.Printf("No droplets listed in region [%s]", region)
+	}
+
+	// find private iface name
+	iface, err := FindInterfaceName(ifaces, privAddr)
+	failIfErr(err)
+
+	// setup droplan-peers chain for private interface
+	err = Setup(ipt, iface, "droplan-peers")
 	failIfErr(err)
 
 	// update droplan-peers
-	err = UpdatePeers(ipt, allowed)
+	err = UpdatePeers(ipt, privatePeers, "droplan-peers")
 	failIfErr(err)
-	log.Printf(`Added %d peers to droplan-peers`, len(allowed))
+	log.Printf("Added %d peers to droplan-peers", len(privatePeers))
 }
 
 func failIfErr(err error) {

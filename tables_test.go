@@ -156,7 +156,7 @@ func TestSetup(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		out := Setup(test.ipt, "eth1")
+		out := Setup(test.ipt, "eth1", "droplan-peers")
 		if !reflect.DeepEqual(out, test.exp) {
 			t.Logf("want:%v", test.exp)
 			t.Logf("got:%v", out)
@@ -262,7 +262,7 @@ func TestUpdatePeers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		out := UpdatePeers(test.ipt, test.peers)
+		out := UpdatePeers(test.ipt, test.peers, "droplan-peers")
 		if !reflect.DeepEqual(out, test.exp) {
 			t.Logf("want:%v", test.exp)
 			t.Logf("got:%v", out)
