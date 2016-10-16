@@ -145,6 +145,17 @@ func (c *Client) Region() (string, error) {
 	return region, err
 }
 
+// AuthToken returns the authentication token.
+func (c *Client) AuthToken() (string, error) {
+	var authToken string
+	err := c.doGet("auth-token", func(r io.Reader) error {
+		authTokenraw, err := ioutil.ReadAll(r)
+		authToken = string(authTokenraw)
+		return err
+	})
+	return authToken, err
+}
+
 // PublicKeys returns the public SSH key(s) that were added to
 // the Droplet's root user's authorized_keys file during Droplet
 // creation.

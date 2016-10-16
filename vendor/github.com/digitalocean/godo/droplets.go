@@ -55,6 +55,7 @@ type Droplet struct {
 	Created     string    `json:"created_at,omitempty"`
 	Kernel      *Kernel   `json:"kernel,omitempty"`
 	Tags        []string  `json:"tags,ommitempty"`
+	VolumeIDs   []string  `json:"volumes"`
 }
 
 // PublicIPv4 returns the public IPv4 address for the Droplet.
@@ -156,6 +157,27 @@ func (d DropletCreateImage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.ID)
 }
 
+// DropletCreateVolume identifies a volume to attach for the create request. It
+// prefers Name over ID,
+type DropletCreateVolume struct {
+	ID   string
+	Name string
+}
+
+// MarshalJSON returns an object with either the name or id of the volume. It
+// returns the id if the name is empty.
+func (d DropletCreateVolume) MarshalJSON() ([]byte, error) {
+	if d.Name != "" {
+		return json.Marshal(struct {
+			Name string `json:"name"`
+		}{Name: d.Name})
+	}
+
+	return json.Marshal(struct {
+		ID string `json:"id"`
+	}{ID: d.ID})
+}
+
 // DropletCreateSSHKey identifies a SSH Key for the create request. It prefers fingerprint over ID.
 type DropletCreateSSHKey struct {
 	ID          int
@@ -183,6 +205,7 @@ type DropletCreateRequest struct {
 	IPv6              bool                  `json:"ipv6"`
 	PrivateNetworking bool                  `json:"private_networking"`
 	UserData          string                `json:"user_data,omitempty"`
+	Volumes           []DropletCreateVolume `json:"volumes,omitempty"`
 }
 
 // DropletMultiCreateRequest is a request to create multiple droplets.
