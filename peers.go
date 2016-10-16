@@ -9,7 +9,7 @@ func SortDroplets(droplets []godo.Droplet) map[string][]string {
 
 	for _, droplet := range droplets {
 		for _, net := range droplet.Networks.V4 {
-			if net.Type == `private` {
+			if net.Type == "private" {
 				_, ok := netDrops[droplet.Region.Slug]
 				if ok {
 					netDrops[droplet.Region.Slug] = append(netDrops[droplet.Region.Slug], net.IPAddress)
@@ -20,6 +20,20 @@ func SortDroplets(droplets []godo.Droplet) map[string][]string {
 		}
 	}
 
+	return netDrops
+}
+
+// PublicDroplets returns an array of all the public ip interfaces of the provided
+// droplets
+func PublicDroplets(droplets []godo.Droplet) []string {
+	netDrops := []string{}
+	for _, droplet := range droplets {
+		for _, net := range droplet.Networks.V4 {
+			if net.Type == "public" {
+				netDrops = append(netDrops, net.IPAddress)
+			}
+		}
+	}
 	return netDrops
 }
 

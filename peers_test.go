@@ -2,13 +2,97 @@ package main
 
 import (
 	"errors"
-	"net/url"
 	"reflect"
 	"testing"
 
 	"github.com/digitalocean/godo"
-	. "github.com/franela/goblin"
 )
+
+func TestDropletList(t *testing.T) {
+	tests := []struct {
+		name             string
+		ds               *stubDropletService
+		expectedDroplets []godo.Droplet
+		expectedError    error
+	}{
+		{
+			name: "no droplets",
+			ds: &stubDropletService{
+				list: func(b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = nil
+					return []godo.Droplet{}, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{},
+		},
+		{
+			name: "single page of droplets",
+			ds: &stubDropletService{
+				list: func(b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = nil
+					return []godo.Droplet{{Name: "foobar"}}, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{{Name: "foobar"}},
+		},
+		{
+			name: "multiple pages of droplets",
+			ds: &stubDropletService{
+				list: func(b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					drops := []godo.Droplet{}
+					if b.Page == 0 {
+						resp.Links = &godo.Links{Pages: &godo.Pages{Next: "http://example.com/droplets?page=2", Last: "http://example.com/droplets?page=2"}}
+						drops = append(drops, godo.Droplet{Name: "firstPage"})
+					} else {
+						resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "http://example.com/droplets?page=1"}}
+						drops = append(drops, godo.Droplet{Name: "secondPage"})
+					}
+					return drops, resp, nil
+				},
+			},
+			expectedDroplets: []godo.Droplet{{Name: "firstPage"}, {Name: "secondPage"}},
+		},
+		{
+			name: "list errors",
+			ds: &stubDropletService{
+				list: func(b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					return []godo.Droplet{}, nil, errors.New("asdf")
+				},
+			},
+			expectedError: errors.New("asdf"),
+		},
+		{
+			name: "current page errors",
+			ds: &stubDropletService{
+				list: func(b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
+					resp := &godo.Response{}
+					resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "page=)", Last: "page="}}
+					return []godo.Droplet{{Name: "foobar"}}, resp, nil
+				},
+			},
+			expectedError: errors.New("parse page=): invalid URI for request"),
+		},
+	}
+
+	for _, test := range tests {
+		out, err := DropletList(test.ds)
+		if !reflect.DeepEqual(err, test.expectedError) {
+			if err.Error() != test.expectedError.Error() {
+				t.Logf("want:%v", test.expectedError)
+				t.Logf("got:%v", err)
+				t.Fatalf("test case failed: %s", test.name)
+			}
+		}
+		if !reflect.DeepEqual(out, test.expectedDroplets) {
+			t.Logf("want:%v", test.expectedDroplets)
+			t.Logf("got:%v", out)
+			t.Fatalf("test case failed: %s", test.name)
+		}
+	}
+}
 
 func TestDropletListTags(t *testing.T) {
 	tests := []struct {
@@ -34,10 +118,10 @@ func TestDropletListTags(t *testing.T) {
 				listTag: func(a string, b *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
 					resp := &godo.Response{}
 					resp.Links = nil
-					return []godo.Droplet{{Name: `foobar`}}, resp, nil
+					return []godo.Droplet{{Name: "foobar"}}, resp, nil
 				},
 			},
-			expectedDroplets: []godo.Droplet{{Name: `foobar`}},
+			expectedDroplets: []godo.Droplet{{Name: "foobar"}},
 		},
 		{
 			name: "multiple pages of droplets",
@@ -46,16 +130,16 @@ func TestDropletListTags(t *testing.T) {
 					resp := &godo.Response{}
 					drops := []godo.Droplet{}
 					if b.Page == 0 {
-						resp.Links = &godo.Links{Pages: &godo.Pages{Next: `http://example.com/droplets?page=2`, Last: `http://example.com/droplets?page=2`}}
-						drops = append(drops, godo.Droplet{Name: `firstPage`})
+						resp.Links = &godo.Links{Pages: &godo.Pages{Next: "http://example.com/droplets?page=2", Last: "http://example.com/droplets?page=2"}}
+						drops = append(drops, godo.Droplet{Name: "firstPage"})
 					} else {
-						resp.Links = &godo.Links{Pages: &godo.Pages{Prev: `http://example.com/droplets?page=1`}}
-						drops = append(drops, godo.Droplet{Name: `secondPage`})
+						resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "http://example.com/droplets?page=1"}}
+						drops = append(drops, godo.Droplet{Name: "secondPage"})
 					}
 					return drops, resp, nil
 				},
 			},
-			expectedDroplets: []godo.Droplet{{Name: `firstPage`}, {Name: `secondPage`}},
+			expectedDroplets: []godo.Droplet{{Name: "firstPage"}, {Name: "secondPage"}},
 		},
 		{
 			name: "list errors",
@@ -96,138 +180,98 @@ func TestDropletListTags(t *testing.T) {
 	}
 }
 
-func TestPeers(t *testing.T) {
-	g := Goblin(t)
-
-	g.Describe(`SortDroplets`, func() {
-		region := &godo.Region{Slug: `nyc1`}
-		droplet := godo.Droplet{Region: region}
-		var output map[string][]string
-
-		g.BeforeEach(func() {
-			output = SortDroplets([]godo.Droplet{droplet})
-		})
-
-		g.Describe(`without a private network`, func() {
-			g.Before(func() {
-				droplet.Networks = &godo.Networks{
+func TestSortDroplets(t *testing.T) {
+	tests := []struct {
+		name    string
+		droplet godo.Droplet
+		exp     map[string][]string
+	}{
+		{
+			name: "no private iface",
+			droplet: godo.Droplet{
+				Region: &godo.Region{
+					Slug: "nyc1",
+				},
+				Networks: &godo.Networks{
 					V4: []godo.NetworkV4{
-						godo.NetworkV4{IPAddress: `192.168.0.0`, Type: `public`},
+						godo.NetworkV4{IPAddress: "192.168.0.0", Type: "public"},
 					},
-				}
-			})
-
-			g.It(`is not included in the output`, func() {
-				_, exists := output[region.Slug]
-				g.Assert(exists).Equal(false)
-			})
-		})
-
-		g.Describe(`with a private network`, func() {
-			g.Before(func() {
-				droplet.Networks = &godo.Networks{
+				},
+			},
+			exp: map[string][]string{},
+		},
+		{
+			name: "private iface",
+			droplet: godo.Droplet{
+				Region: &godo.Region{
+					Slug: "nyc1",
+				},
+				Networks: &godo.Networks{
 					V4: []godo.NetworkV4{
-						godo.NetworkV4{IPAddress: `192.168.0.0`, Type: `private`},
+						godo.NetworkV4{IPAddress: "192.168.0.0", Type: "private"},
 					},
-				}
-			})
+				},
+			},
+			exp: map[string][]string{
+				"nyc1": []string{"192.168.0.0"},
+			},
+		},
+	}
 
-			g.It(`is included in the output`, func() {
-				g.Assert(output[region.Slug]).Equal([]string{`192.168.0.0`})
-			})
-		})
-	})
+	for _, test := range tests {
+		out := SortDroplets([]godo.Droplet{test.droplet})
+		if !reflect.DeepEqual(out, test.exp) {
+			t.Logf("want:%v", test.exp)
+			t.Logf("got:%v", out)
+			t.Fatalf("test case failed: %s", test.name)
+		}
+	}
+}
 
-	g.Describe(`DropletList`, func() {
-		var sds *stubDropletService
-		g.BeforeEach(func() {
-			sds = &stubDropletService{}
-		})
+func TestPublicDroplets(t *testing.T) {
+	tests := []struct {
+		name    string
+		droplet godo.Droplet
+		exp     []string
+	}{
+		{
+			name: "no public iface",
+			droplet: godo.Droplet{
+				Region: &godo.Region{
+					Slug: "nyc1",
+				},
+				Networks: &godo.Networks{
+					V4: []godo.NetworkV4{
+						godo.NetworkV4{IPAddress: "192.168.0.0", Type: "private"},
+					},
+				},
+			},
+			exp: []string{},
+		},
+		{
+			name: "public iface",
+			droplet: godo.Droplet{
+				Region: &godo.Region{
+					Slug: "nyc1",
+				},
+				Networks: &godo.Networks{
+					V4: []godo.NetworkV4{
+						godo.NetworkV4{IPAddress: "192.168.0.0", Type: "public"},
+					},
+				},
+			},
+			exp: []string{"192.168.0.0"},
+		},
+	}
 
-		g.Describe(`with no droplets`, func() {
-			g.BeforeEach(func() {
-				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
-					resp := &godo.Response{}
-					resp.Links = nil
-					return []godo.Droplet{}, resp, nil
-				}
-			})
-
-			g.It(`returns no droplets`, func() {
-				drops, err := DropletList(sds)
-				g.Assert(drops).Equal([]godo.Droplet{})
-				g.Assert(err).Equal(nil)
-			})
-		})
-
-		g.Describe(`with a single page of droplets`, func() {
-			g.BeforeEach(func() {
-				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
-					resp := &godo.Response{}
-					resp.Links = nil
-					return []godo.Droplet{{Name: `foobar`}}, resp, nil
-				}
-			})
-
-			g.It(`returns the droplets`, func() {
-				drops, err := DropletList(sds)
-				g.Assert(drops).Equal([]godo.Droplet{{Name: `foobar`}})
-				g.Assert(err).Equal(nil)
-			})
-		})
-
-		g.Describe(`with a multiple pages of droplets`, func() {
-			g.BeforeEach(func() {
-				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
-					resp := &godo.Response{}
-					drops := []godo.Droplet{}
-					if a.Page == 0 {
-						resp.Links = &godo.Links{Pages: &godo.Pages{Next: `http://example.com/droplets?page=2`, Last: `http://example.com/droplets?page=2`}}
-						drops = append(drops, godo.Droplet{Name: `firstPage`})
-					} else {
-						resp.Links = &godo.Links{Pages: &godo.Pages{Prev: `http://example.com/droplets?page=1`}}
-						drops = append(drops, godo.Droplet{Name: `secondPage`})
-					}
-					return drops, resp, nil
-				}
-			})
-
-			g.It(`returns the droplets`, func() {
-				drops, err := DropletList(sds)
-				g.Assert(drops).Equal([]godo.Droplet{{Name: `firstPage`}, {Name: `secondPage`}})
-				g.Assert(err).Equal(nil)
-			})
-		})
-
-		g.Describe("when droplet services list errors", func() {
-			g.BeforeEach(func() {
-				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
-					return []godo.Droplet{}, nil, errors.New("asdf")
-				}
-			})
-
-			g.It("returns an error", func() {
-				_, err := DropletList(sds)
-				g.Assert(err).Equal(errors.New("asdf"))
-			})
-		})
-
-		g.Describe("when current page errors", func() {
-			g.BeforeEach(func() {
-				sds.list = func(a *godo.ListOptions) ([]godo.Droplet, *godo.Response, error) {
-					resp := &godo.Response{}
-					resp.Links = &godo.Links{Pages: &godo.Pages{Prev: "page=)", Last: "page="}}
-					return []godo.Droplet{{Name: "foobar"}}, resp, nil
-				}
-			})
-
-			g.It("returns an error", func() {
-				_, err := DropletList(sds)
-
-				g.Assert(err.(*url.Error).Op).Equal("parse")
-			})
-		})
-	})
+	for _, test := range tests {
+		out := PublicDroplets([]godo.Droplet{test.droplet})
+		if !reflect.DeepEqual(out, test.exp) {
+			t.Logf("want:%v", test.exp)
+			t.Logf("got:%v", out)
+			t.Fatalf("test case failed: %s", test.name)
+		}
+	}
 }
 
 type stubDropletService struct {
