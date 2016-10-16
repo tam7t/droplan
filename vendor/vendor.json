@@ -9,6 +9,7 @@
 			"revisionTime": "2016-03-31T14:02:05Z"
 		},
 		{
+			"checksumSHA1": "1TbarjGexBMTND0ysr/UxqYQrmk=",
 			"path": "github.com/digitalocean/go-metadata",
 			"revision": "4407e7cd82798dc70d82e7f87c82835ad37382f7",
 			"revisionTime": "2015-11-05T15:42:06-05:00"
@@ -20,26 +21,31 @@
 			"revisionTime": "2016-04-25T19:38:15Z"
 		},
 		{
+			"checksumSHA1": "Evpv9y6iPdy+8FeAVDmKrqV1sqo=",
 			"path": "github.com/google/go-querystring/query",
 			"revision": "2a60fc2ba6c19de80291203597d752e9ba58e4c0",
 			"revisionTime": "2015-10-28T14:53:53-04:00"
 		},
 		{
+			"checksumSHA1": "GQ9bu6PuydK3Yor1JgtVKUfEJm8=",
 			"path": "github.com/tent/http-link-go",
 			"revision": "ac974c61c2f990f4115b119354b5e0b47550e888",
 			"revisionTime": "2013-07-02T18:55:49-04:00"
 		},
 		{
+			"checksumSHA1": "5ARrN3Zq+E9zazFb/N+b08Serys=",
 			"path": "golang.org/x/net/context",
 			"revision": "0e6d34ef942cfc38ae0cf6a660e349c3a3d08b93",
 			"revisionTime": "2016-01-09T15:16:57-08:00"
 		},
 		{
+			"checksumSHA1": "mktBVED98G2vv+OKcSgtnFVZC1Y=",
 			"path": "golang.org/x/oauth2",
 			"revision": "2baa8a1b9338cf13d9eeb27696d761155fa480be",
 			"revisionTime": "2015-12-03T13:21:41-08:00"
 		},
 		{
+			"checksumSHA1": "st9F4RETvsjcEHmnMvF9XvlAxDE=",
 			"path": "golang.org/x/oauth2/internal",
 			"revision": "2baa8a1b9338cf13d9eeb27696d761155fa480be",
 			"revisionTime": "2015-12-03T13:21:41-08:00"
