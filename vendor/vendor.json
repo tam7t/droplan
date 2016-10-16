@@ -20,11 +20,6 @@
 			"revisionTime": "2016-04-25T19:38:15Z"
 		},
 		{
-			"path": "github.com/franela/goblin",
-			"revision": "ac712d36d1b123f786cbedcfa19b5d25697a14cc",
-			"revisionTime": "2015-09-10T16:03:24-03:00"
-		},
-		{
 			"path": "github.com/google/go-querystring/query",
 			"revision": "2a60fc2ba6c19de80291203597d752e9ba58e4c0",
 			"revisionTime": "2015-10-28T14:53:53-04:00"
