@@ -60,19 +60,21 @@ A `Makefile` is included:
 
 ## Docker image:
 
-There's a prebuilt [docker image][1] (currently it's third party, but I hope it'll get merged back to tam7t/droplan).
+We provice a prebuilt [docker image][1]
 
 Example usage:
 
 ```sh
-docker run -d --restart=always --net=host -e DO_KEY=$your_digitalocean_api_key tam7t/droplan
+docker run -d --restart=always --net=host --cap-add=NET_ADMIN -e DO_KEY=$your_digitalocean_api_key tam7t/droplan
 ```
 
-- `-d --restart=always` starts the container in the background and restarts it on error
+- `-d --restart=always` starts the container in the background and restarts it on error (and on reboot)
 - `--net=host` is required because we want to affect the host's firewall rules, not the container's
+- `--cap-add=NET_ADMIN` to allow changing the host's firewall rules
 - you have to specify your DigitalOcean API key (using `-e DO_KEY`)
 - you can add `-e PUBLIC=true` or `-e DO_TAG=tagname` as described above
 - specify `-e DO_INTERVAL=120` to change the delay between droplan invocations (default: '300' (5 minutes) ) 
+- To manually start droplan (i.e. skip the 5 minute delay between invocations), simply use `docker restart $container-name`
 
 
 [1]: https://hub.docker.com/r/tam7t/droplan/
