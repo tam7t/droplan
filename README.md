@@ -56,3 +56,28 @@ A `Makefile` is included:
   * `test` - runs unit tests
   * `build` - builds `droplan` on the current platform
   * `release` - builds releasable artifacts
+
+
+## Docker image:
+
+There's a prebuilt [docker image][1] (currently it's third party, but I hope it'll get merged back to tam7t/droplan).
+
+Example usage:
+
+```sh
+docker run -d --restart=always --net=host -e DO_KEY=$your_digitalocean_api_key mreithub/droplan
+```
+
+- `-d --restart=always` starts the container in the background and restarts it on error
+- `--net=host` is required because we want to affect the host's firewall rules, not the container's
+- you have to specify your DigitalOcean API key (using `-e DO_KEY`)
+- you can add `-e PUBLIC=true` or `-e DO_TAG=tagname` as described above
+
+
+Note: The differences of this image compared to the original [tam7t/droplan][2] are (as of the time of this writing):
+- added `docker-run.sh` which periodically invokes the droplan utility (using `$DO_INTERVAL` as delay between invocations)
+- automated the docker build (instead of copying the compiled binary, we acutally compile inside the 
+- Using automated builds also means that this `README.md` will be used as long description of the docker 
+
+[1]: https://hub.docker.com/r/mreithub/droplan/
+[2]: https://hub.docker.com/r/tam7t/droplan/
