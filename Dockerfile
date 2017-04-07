@@ -1,15 +1,11 @@
-FROM golang:alpine
-RUN apk add --no-cache iptables ca-certificates git && \
+FROM alpine:3.4
+RUN apk add --no-cache iptables ca-certificates && \
 	update-ca-certificates
 
 ENV DO_KEY ""
 ENV DO_TAG ""
 
-RUN ln -s go/src/github.com/tam7t/droplan/ /droplan
-COPY ./ /go/src/github.com/tam7t/droplan/
+ADD droplan /droplan
+ADD docker-run.sh /docker-run.sh
 
-WORKDIR /droplan
-RUN go get -u github.com/kardianos/govendor
-RUN govendor build
-
-ENTRYPOINT ["/droplan/docker-run.sh"]
+CMD ["/docker-run.sh"]
