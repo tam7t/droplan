@@ -7,10 +7,10 @@ build:
 	go build .
 
 build-amd64:
-	@env GOOS=linux GOARCH=amd64 go build -ldflags="-X main.appVersion=${DROPLAN_VERSION}" -o droplan
+	@docker run -it --rm -v `pwd`:/go/src/github.com/tam7t/droplan -w /go/src/github.com/tam7t/droplan golang:latest env GOOS=linux GOARCH=amd64 go build -ldflags="-X main.appVersion=${DROPLAN_VERSION}" -o droplan
 
 build-i386:
-	@env GOOS=linux GOARCH=386 go build -ldflags="-X main.appVersion=${DROPLAN_VERSION}" -o droplan_i386
+	@docker run -it --rm -v `pwd`:/go/src/github.com/tam7t/droplan -w /go/src/github.com/tam7t/droplan golang:latest env GOOS=linux GOARCH=386 go build -ldflags="-X main.appVersion=${DROPLAN_VERSION}" -o droplan_i386
 
 release: build-amd64 build-i386
 	@zip droplan_${DROPLAN_VERSION}_linux_amd64.zip droplan
