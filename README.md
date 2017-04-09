@@ -1,5 +1,7 @@
 # droplan [![Build Status](http://img.shields.io/travis/tam7t/droplan.svg?style=flat-square)](https://travis-ci.org/tam7t/droplan) [![Gitter](https://img.shields.io/gitter/room/tam7t/droplan.js.svg?style=flat-square)](https://gitter.im/tam7t/droplan)
 
+[![Join the chat at https://gitter.im/tam7t/dolan](https://badges.gitter.im/tam7t/dolan.svg)](https://gitter.im/tam7t/dolan?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## About
 
 This utility helps secure the network interfaces on DigitalOcean droplets by
