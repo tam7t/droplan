@@ -60,7 +60,7 @@ A `Makefile` is included:
 
 ## Docker image:
 
-We provice a prebuilt [docker image][1]
+We provide a prebuilt [docker image][1]
 
 Example usage:
 
