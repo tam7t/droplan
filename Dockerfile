@@ -6,4 +6,6 @@ ENV DO_KEY ""
 ENV DO_TAG ""
 
 ADD droplan /droplan
-ENTRYPOINT ["/droplan"]
+ADD docker-run.sh /docker-run.sh
+
+CMD ["/docker-run.sh"]
