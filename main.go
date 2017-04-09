@@ -88,6 +88,9 @@ func main() {
 
 	// find private iface name
 	iface, err := FindInterfaceName(ifaces, privAddr)
+	if public != "" && err != nil && err.Error() == "no private interfaces" {
+		os.Exit(0)
+	}
 	failIfErr(err)
 
 	// setup droplan-peers chain for private interface
