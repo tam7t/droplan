@@ -1,5 +1,11 @@
 # droplan [![Build Status](http://img.shields.io/travis/tam7t/droplan.svg?style=flat-square)](https://travis-ci.org/tam7t/droplan) [![Gitter](https://img.shields.io/gitter/room/tam7t/droplan.js.svg?style=flat-square)](https://gitter.im/tam7t/droplan)
 
+## DigitalOcean Firewalls!
+
+Exciting news! DigitalOcean now has a native firewall option that integrates well with tagging. Please consider using that instead of `droplan`!
+
+https://blog.digitalocean.com/cloud-firewalls-secure-droplets-by-default/
+
 ## About
 
 This utility helps secure the network interfaces on DigitalOcean droplets by
